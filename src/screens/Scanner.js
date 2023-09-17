@@ -1,8 +1,16 @@
-import { View, Text, BackHandler, Button, Image, ImageBackground, StyleSheet, TextInput } from 'react-native'
+import {
+  View, Text, BackHandler, Button, Image, ImageBackground, StyleSheet, TextInput, TouchableOpacity,
+  Linking
+} from 'react-native'
 import React, { useEffect } from 'react'
 import LinearBackgroundButton from './components/LinearBackgroundButton ';
-
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import { RNCamera } from 'react-native-camera';
 const Scanner = ({ navigation }) => {
+  const onSuccess = (e)=>{
+   alert(e.data)
+   navigation.navigate('Home');
+  }
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -11,9 +19,14 @@ const Scanner = ({ navigation }) => {
       >
         <Image source={require('../assets/image/main-logo.png')} style={{ marginTop: 50 }} />
       </ImageBackground>
-      <View style={styles.mainContent}>
-        <Text style={{ fontSize: 28, fontWeight: '700' }} >Scanner</Text>
-      </View>
+          <Text style={{fontSize:24,fontWeight:'700',padding:20,marginBottom:40,color:'#000'}} >Scanner</Text>
+          <QRCodeScanner
+            onRead={(e)=>{onSuccess(e)}}
+            flashMode={RNCamera.Constants.FlashMode.torch}
+            showMarker={true}
+            reactivate={true}
+            reactivateTimeout={500}
+          />        
     </View>
   )
 }
@@ -28,12 +41,10 @@ const styles = StyleSheet.create({
     height: 250,
     alignItems: 'center',
   },
-  mainContent: {
-    width: '100%',
-    alignItems: 'center',
-    marginTop: 30,
-    paddingRight: 20,
-    paddingLeft: 20
+  centerText: {
+    fontSize: 18,
+    padding: 32,
+    color: '#777'
   },
 });
 
