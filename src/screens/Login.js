@@ -1,10 +1,14 @@
-import { View, Text, BackHandler, Button, Image, ImageBackground, StyleSheet, TextInput } from 'react-native'
-import React, { useEffect } from 'react'
+import { View, Text, BackHandler, Button, Image, ImageBackground, StyleSheet, TextInput, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { useIsFocused } from '@react-navigation/native';
 import LinearBackgroundButton from './components/LinearBackgroundButton ';
-
+import validation from '../utils/validation';
+import { showError, showSuccess } from '../utils/helperFunction';
+import actions from '../redux/actions';
 
 const Login = ({ navigation }) => {
+
+  // BackHandler function in home page 
   const isFocused = useIsFocused();
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -18,6 +22,48 @@ const Login = ({ navigation }) => {
       backHandler.remove();
     };
   }, [isFocused]);
+
+  const [state, setState]= useState({
+    isLoading:false,
+    email:'',
+    password:'',
+    isSecure:true
+  });
+  const {isLoading, email, password, isSecure} = state
+  const updateState = (data)=> setState(()=>({...state, ...data}));
+
+  const isValidData = ()=>{
+    const error = validation({
+      email,
+      password
+    })
+    if(error){
+      showError(error)
+      return false
+    }
+    return true
+  }
+
+  //On Login
+  const onLogin = async()=>{
+    const checkValid = isValidData()
+    if(checkValid){
+      updateState({isLoading:true})
+      try{
+        const res = await actions.login({
+          email,
+          password
+        })
+        showSuccess(email+" Successfully Logged")
+        navigation.navigate("Parent")
+        updateState({isLoading:false})
+      }catch(error){
+        console.log("============",error)
+        showError(error.message)
+        updateState({isLoading:false})
+      }
+    }
+  }
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -32,6 +78,7 @@ const Login = ({ navigation }) => {
           <TextInput
             placeholder='Email id'
             style={styles.inputStyle}
+            onChangeText={(email)=>updateState({email})}
           />
           <Image
             source={require('../assets/image/profile-icon.png')}
@@ -45,8 +92,10 @@ const Login = ({ navigation }) => {
         <View style={styles.inputViewStyle} >
           <TextInput
             placeholder='Password'
-            secureTextEntry={true}
+            secureTextEntry={isSecure}
             style={styles.inputStyle}
+            onChangeText={(password)=>updateState({password})}
+
           />
           <Image
             source={require('../assets/image/password-icon.png')}
@@ -69,6 +118,8 @@ const Login = ({ navigation }) => {
         <View style={{ marginTop: 20 }}>
           <LinearBackgroundButton
             text="Login"
+            onPress={onLogin}
+            isLoading={isLoading}
           />
         </View>
       </View>

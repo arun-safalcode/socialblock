@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const LinearBackgroundButton  = ({ onPress, text }) => {
+const LinearBackgroundButton  = ({ onPress, text, isLoading }) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <LinearGradient
@@ -11,7 +11,11 @@ const LinearBackgroundButton  = ({ onPress, text }) => {
         start={{ x: 0, y: 0 }}
         end={{ x: 2, y: 0 }}
       >
-        <Text style={styles.buttonText}>{text}</Text>
+        {isLoading
+        ?<ActivityIndicator size='large' color='white' />
+        :<Text style={styles.buttonText}>{text}</Text>
+        }
+
       </LinearGradient>
     </TouchableOpacity>
   )

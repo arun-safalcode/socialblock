@@ -1,11 +1,17 @@
 import { View, Text, Image } from 'react-native'
 import React, { useEffect } from 'react'
 import logo from '../assets/image//logo.png'
+import { getUserData } from '../utils/utils';
+import { useSelector } from 'react-redux';
 
 const Splash = ({navigation}) => {
+  const userData = useSelector((state)=> state.auth.userData)
+
   useEffect(()=>{
     setTimeout(()=>{
-      navigation.navigate('Parent')
+      {!!userData && userData?.access_token ? navigation.navigate("Parent")
+        : navigation.navigate("Login")
+      }
     },2000)
   },[])
   return (

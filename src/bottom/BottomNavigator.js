@@ -20,6 +20,18 @@ const BottomNavigator = () => {
             }
         }}
         />
+        <Bottom.Screen 
+        name='Profile'
+        component={Profile}
+        options={{
+            headerShown:false,
+            tabBarIcon:(tabinfo)=>{
+                return(
+                    <Image source={require('../assets/icons/avatar.png')} style={{width:20, height:20, tintColor:tabinfo.focused?'red':'black'}} />
+                )
+            }
+        }}
+        />
        
     </Bottom.Navigator>
   )

@@ -1,7 +1,8 @@
-import { View, Text, TouchableOpacity, Image, BackHandler, ImageBackground, StyleSheet, ScrollView, } from 'react-native'
+import { View, Text, TouchableOpacity, Image, BackHandler, ImageBackground, StyleSheet, ScrollView, NativeModules } from 'react-native'
 import React, { useEffect } from 'react'
 import { useIsFocused } from '@react-navigation/native';
 import LinearBackgroundButton from './components/LinearBackgroundButton ';
+const OverlayPermission = NativeModules.OverlayPermission;
 
 const Home = ({ navigation }) => {
 
@@ -19,6 +20,12 @@ const Home = ({ navigation }) => {
     };
   }, [isFocused]);
 
+  const checkPermission = ()=>{
+    alert("Checking...");
+   const res = OverlayPermission.checkUsageAccessPermission();
+   console.log(res);
+
+  }
 
 
   return (
@@ -31,14 +38,6 @@ const Home = ({ navigation }) => {
         backgroundColor: '#fff',
         alignItems: 'center'
       }} >
-        <TouchableOpacity
-          style={{ marginLeft: 15 }}
-          onPress={() => {
-            navigation.openDrawer();
-          }}
-        >
-          <Image source={require('../assets/icons/menu.png')} style={{ width: 30, height: 30 }} />
-        </TouchableOpacity>
         <Text
           style={{ fontSize: 18, fontWeight: '600', marginLeft: 15 }}
         >Your dashboard</Text>
@@ -63,7 +62,8 @@ const Home = ({ navigation }) => {
             <LinearBackgroundButton
               text="Scan Now"
               onPress={() => {
-                navigation.navigate('Scanner')
+                // navigation.navigate('Scanner')
+                checkPermission();
               }}
             />
           </View>

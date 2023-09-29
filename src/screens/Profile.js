@@ -1,8 +1,22 @@
-import { View, Text, BackHandler, Button, Image, ImageBackground, StyleSheet, TextInput } from 'react-native'
+import { View, Text, BackHandler, Button, Image, ImageBackground, StyleSheet, TextInput,Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import LinearBackgroundButton from './components/LinearBackgroundButton ';
+import { useSelector } from 'react-redux'
+import actions from '../redux/actions';
 
-const Profile = () => {
+const Profile = ({navigation}) => {
+  const userData = useSelector((state) => state.auth.userData);
+  const onLogoutAlert = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure, you want to logout?',
+      [{ text: 'yes', onPress: logout }, { text: 'No', }],
+      { cancelable: true }
+    )
+  }
+  const logout = () => {
+      navigation.navigate("Logout");
+  }
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -16,20 +30,20 @@ const Profile = () => {
         source={require('../assets/image/profile.png')}
         style={{marginTop:10, alignSelf:'center',width:100,height:100}}
         />
-        <Text style={{ fontSize: 22, fontWeight: '700' }} >User Name</Text>
+        <Text style={{ fontSize: 22, fontWeight: '700' }} >{userData?userData.user.name:''}</Text>
         <View style={{width:'100%'}}>
           <View style={styles.table}>
             <View style={styles.row}>
               <Text style={styles.cell}>Employee Id - </Text>
-              <Text style={styles.cellData}>0123</Text>
+              <Text style={styles.cellData}>{userData?userData.user.id:''}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.cell}>Email Id - </Text>
-              <Text style={styles.cellData}>admin@admin.com</Text>
+              <Text style={styles.cellData}>{userData?userData.user.email:''}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.cell}>Mobile No - </Text>
-              <Text style={styles.cellData}>0123456789</Text>
+              <Text style={styles.cellData}>{userData?userData.user.phone:''}</Text>
             </View>
             {/* Add more rows as needed */}
           </View>
@@ -37,6 +51,7 @@ const Profile = () => {
         <View style={{ marginTop: 20 }}>
           <LinearBackgroundButton
             text="Logout"
+            onPress={onLogoutAlert}
           />
         </View>
       </View>
