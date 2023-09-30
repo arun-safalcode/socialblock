@@ -9,9 +9,8 @@ const Splash = ({navigation}) => {
 
   useEffect(()=>{
     setTimeout(()=>{
-      {!!userData && userData?.access_token ? navigation.navigate("Parent")
-        : navigation.navigate("Login")
-      }
+
+      navigation.navigate("Permissions");
     },2000)
   },[])
   return (

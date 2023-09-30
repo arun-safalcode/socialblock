@@ -2,7 +2,6 @@ import { View, Text, TouchableOpacity, Image, BackHandler, ImageBackground, Styl
 import React, { useEffect } from 'react'
 import { useIsFocused } from '@react-navigation/native';
 import LinearBackgroundButton from './components/LinearBackgroundButton ';
-const OverlayPermission = NativeModules.OverlayPermission;
 
 const Home = ({ navigation }) => {
 
@@ -20,12 +19,6 @@ const Home = ({ navigation }) => {
     };
   }, [isFocused]);
 
-  const checkPermission = ()=>{
-    alert("Checking...");
-   const res = OverlayPermission.checkUsageAccessPermission();
-   console.log(res);
-
-  }
 
 
   return (
@@ -62,8 +55,8 @@ const Home = ({ navigation }) => {
             <LinearBackgroundButton
               text="Scan Now"
               onPress={() => {
-                // navigation.navigate('Scanner')
-                checkPermission();
+                navigation.navigate('Scanner')
+                // checkPermission();
               }}
             />
           </View>

@@ -22,6 +22,7 @@ public class OverlayPermissionPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactApplicationContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new OverlayPermissionModule(reactApplicationContext));
+        modules.add(new SocialMediaBlockerModule(reactApplicationContext));
         return modules;
     }
 

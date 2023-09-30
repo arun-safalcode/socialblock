@@ -15,19 +15,59 @@ import Home from './screens/Home';
 import MainStack from './MainStack';
 import AuthStack from './AuthStack';
 import { useSelector } from 'react-redux';
+import Permissions from './screens/Permissions';
 const Stack=createStackNavigator();
 
 const AppNavigator = () => {
-    const userData = useSelector((state)=> state.auth.userData)
-
-console.log("user data",userData)
+  const userData = useSelector((state)=> state.auth.userData)
   return (
     <NavigationContainer>
         <Stack.Navigator>
-            
-            {!!userData && userData?.access_token ? MainStack(Stack)
-                : AuthStack(Stack)
-            }
+        <Stack.Screen name='Splash' component={Splash}
+                options={{
+                    headerShown: false
+                }} />
+            <Stack.Screen name='Login' component={Login}
+                options={{
+                    headerShown: false
+                }} />
+            <Stack.Screen name='Forgot Password' component={ForgotPassword}
+                options={{
+                    headerShown: false
+                }} />
+            <Stack.Screen name='Success' component={Success}
+                options={{
+                    headerShown: false
+                }} />
+            <Stack.Screen name='Failure' component={Failure}
+                options={{
+                    headerShown: false
+                }} />
+        <Stack.Screen name='Parent' component={Parent}
+                options={{
+                    headerShown: false
+                }} />
+            <Stack.Screen name='Home' component={Home}
+                options={{
+                    headerShown: false
+                }} />
+            <Stack.Screen name='Profile' component={Profile}
+                options={{
+                    headerShown: false
+                }} />
+
+            <Stack.Screen name='Scanner' component={Scanner}
+                options={{
+                    headerShown: false
+                }} />
+            <Stack.Screen name='Logout' component={Logout}
+                options={{
+                    headerShown: false
+                }} />
+            <Stack.Screen name='Permissions' component={Permissions}
+                options={{
+                    headerShown: false
+                }} />
         </Stack.Navigator>
     </NavigationContainer>
   )
