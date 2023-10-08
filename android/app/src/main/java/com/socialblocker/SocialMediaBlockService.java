@@ -97,8 +97,8 @@ public class SocialMediaBlockService extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Social Blocker Service For 2 Min")
-                .setContentText("Blocking")
+                .setContentTitle("Social Blocker Service Running")
+                .setContentText("Do some productive work")
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentIntent(pendingIntent)
                 .build();

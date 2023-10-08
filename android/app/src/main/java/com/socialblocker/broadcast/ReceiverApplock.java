@@ -1,14 +1,17 @@
 package com.socialblocker.broadcast;
 
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import com.socialblocker.MainActivity;
 import com.socialblocker.ScreenBlocker;
 import com.socialblocker.shared.SharedPrefUtil;
 import com.socialblocker.utils.Utils;
@@ -24,6 +27,7 @@ public class ReceiverApplock extends BroadcastReceiver {
     Calendar toTime;
     Calendar currentDay;
     private List<String> lockedApps;
+
     public static void killThisPackageIfRunning(final Context context, String packageName) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         Intent startMain = new Intent(Intent.ACTION_MAIN);
@@ -46,6 +50,10 @@ public class ReceiverApplock extends BroadcastReceiver {
                 prefUtil.clearLastApp();
                 prefUtil.setLastApp(appRunning);
                 killThisPackageIfRunning(context, appRunning);
+                Intent i = new Intent(context, MainActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                i.putExtra("broadcast_receiver", "broadcast_receiver");
+                context.startActivity(i);
             }
     }
 
