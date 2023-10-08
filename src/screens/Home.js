@@ -4,10 +4,12 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import LinearBackgroundButton from './components/LinearBackgroundButton ';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const {OverlayPermission } = NativeModules;
+import actions from '../redux/actions';
 
 const Home = ({ navigation }) => {
 
   const isFocused = useIsFocused();
+  const [attendanceHistory,setAttendanceHistory] = useState([]);
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -22,10 +24,25 @@ const Home = ({ navigation }) => {
     };
   }, [isFocused]);
 
+  const getAttendanceHistory = async ()=>{
+    const res = await actions.attandHistory();
+    setAttendanceHistory(res.data);
+  }
 
 
+  useEffect(() => {
+    getAttendanceHistory();
+  },[isFocused]);
+
+  // Sort the data by the "created_at" timestamp in descending order
+  const sortedData = attendanceHistory.sort(
+    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+  );
+  // Get the latest entry (the first entry in the sorted array)
+  const lastEntry = sortedData[0];
 
 
+ 
   return (
     <View style={{ flex: 1 }} >
       <View style={{
@@ -55,13 +72,11 @@ const Home = ({ navigation }) => {
             style={{ marginTop: 10, alignSelf: 'center', width: 100, height: 100 }}
 
           />
-
           <View style={{ marginTop: 20 }}>
             <LinearBackgroundButton
-              text="Scan Now"
+              text={lastEntry.in_out_status==1?"Scan For Exit":"Scan For In"}
               onPress={() => {
                 navigation.navigate('Scanner')
-                // checkPermission();
               }}
             />
           </View>
@@ -78,37 +93,14 @@ const Home = ({ navigation }) => {
                 <Text style={styles.cellHeader}>Time</Text>
                 <Text style={styles.cellHeader}>Exit/In</Text>
               </View>
-              <View style={styles.row}>
-                <Text style={styles.cell}>0123</Text>
-                <Text style={styles.cell}>10:00 AM</Text>
-                <Text style={styles.cell}>In</Text>
+              {attendanceHistory.map((item, index) => (
+                <View style={styles.row} key={index} >
+                <Text style={styles.cell}>{item.employee_id}</Text>
+                <Text style={styles.cell}>{item.in_out_status==1?item.start_time:item.end_time}</Text>
+                <Text style={styles.cell}>{item.in_out_status==1?"In":"Exit"}</Text>
               </View>
-              <View style={styles.row}>
-                <Text style={styles.cell}>0123</Text>
-                <Text style={styles.cell}>06:00 PM</Text>
-                <Text style={styles.cell}>Exit</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.cell}>0123</Text>
-                <Text style={styles.cell}>06:00 PM</Text>
-                <Text style={styles.cell}>Exit</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.cell}>0123</Text>
-                <Text style={styles.cell}>06:00 PM</Text>
-                <Text style={styles.cell}>Exit</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.cell}>0123</Text>
-                <Text style={styles.cell}>06:00 PM</Text>
-                <Text style={styles.cell}>Exit</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.cell}>0123</Text>
-                <Text style={styles.cell}>06:00 PM</Text>
-                <Text style={styles.cell}>Exit</Text>
-              </View>
-              {/* Add more rows as needed */}
+              ))}
+              
             </View>
 
           </View>

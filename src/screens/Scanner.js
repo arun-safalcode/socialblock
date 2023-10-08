@@ -9,7 +9,7 @@ import { RNCamera } from 'react-native-camera';
 import { useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showError, showSuccess } from '../utils/helperFunction';
-import actions from '../redux/actions';
+import actions from '../redux/actions'; 
 const {OverlayPermission } = NativeModules;
 import { useRoute } from '@react-navigation/native';
 // Get the application package name list from React Native.
@@ -26,17 +26,6 @@ const Scanner = ({ navigation }) => {
   const {isLoading, token, isSecure, in_outStatus} = state
   const updateState = (data)=> setState(()=>({...state, ...data}));
   const [lockedList, setLockList] = useState([]);
-
-    //Fetching all disabled application list
-    // const fetchAppList = async ()=>{
-    //   try{
-    //     const res = await actions.applist();
-    //     return res.data;
-    //   }catch(error){
-    //     showError(error)
-    //   }
-    // }
-    
 
   //Scan qr code and check user is authenticated or not
   const onSuccess = async (e)=>{

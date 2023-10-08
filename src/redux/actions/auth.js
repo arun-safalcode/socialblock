@@ -1,5 +1,5 @@
 
-import { LOGIN, SIGNUP, SCANNER, ATTENDANCE, APPLIST } from "../../config/urls";
+import { LOGIN, SIGNUP, SCANNER, ATTENDANCE, APPLIST, ATTENDANCE_HISTORY } from "../../config/urls";
 import { apiGet, apiPost, clearUserData, setUserData } from "../../utils/utils";
 import store from "../store";
 import types from "../types";
@@ -72,6 +72,18 @@ export function applist(){
     })
 }
 
+export function attandHistory(){
+    return new Promise((resolve, reject)=>{
+        return apiGet(ATTENDANCE_HISTORY).then((res)=>{
+            if(res){
+                resolve(res)
+                return
+            }
+        }).catch((error)=>{
+            reject(error)
+        })
+    })
+}
 
 export function logout(){
     dispatch({type: types.CLEAR_REDUX_STATE})

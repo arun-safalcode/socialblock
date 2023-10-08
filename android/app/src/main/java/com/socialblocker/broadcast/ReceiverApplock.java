@@ -1,23 +1,18 @@
 package com.socialblocker.broadcast;
 
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.socialblocker.MainActivity;
-import com.socialblocker.ScreenBlocker;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.socialblocker.shared.SharedPrefUtil;
 import com.socialblocker.utils.Utils;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -27,6 +22,8 @@ public class ReceiverApplock extends BroadcastReceiver {
     Calendar toTime;
     Calendar currentDay;
     private List<String> lockedApps;
+    private ReactApplicationContext reactContext;
+
 
     public static void killThisPackageIfRunning(final Context context, String packageName) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -50,10 +47,16 @@ public class ReceiverApplock extends BroadcastReceiver {
                 prefUtil.clearLastApp();
                 prefUtil.setLastApp(appRunning);
                 killThisPackageIfRunning(context, appRunning);
-                Intent i = new Intent(context, MainActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                i.putExtra("broadcast_receiver", "broadcast_receiver");
-                context.startActivity(i);
+//                Intent i = new Intent(context, ScreenBlocker.class);
+//                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                i.putExtra("broadcast_receiver", "broadcast_receiver");
+//                // Add the following line to specify that you want to start your React Native app
+//                i.putExtra("startReactNative", true);
+//                context.startActivity(i);
+
+
+
+
             }
     }
 
