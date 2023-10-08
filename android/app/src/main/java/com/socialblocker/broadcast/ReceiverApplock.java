@@ -53,10 +53,6 @@ public class ReceiverApplock extends BroadcastReceiver {
 //                // Add the following line to specify that you want to start your React Native app
 //                i.putExtra("startReactNative", true);
 //                context.startActivity(i);
-
-
-
-
             }
     }
 
