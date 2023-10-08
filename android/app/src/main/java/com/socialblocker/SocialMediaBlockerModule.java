@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
+import com.socialblocker.services.BackgroundManager;
 
 public class SocialMediaBlockerModule extends ReactContextBaseJavaModule {
     private ReactApplicationContext reactContext;
@@ -22,15 +23,14 @@ public class SocialMediaBlockerModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startBlockingService() {
-        // Start the blocking service
-        Intent intent = new Intent(getReactApplicationContext(), SocialMediaBlockService.class);
+        Intent intent = new Intent(getReactApplicationContext(), BackgroundManager.class);
         getReactApplicationContext().startService(intent);
     }
 
     @ReactMethod
     public void stopBlockingService() {
         // Stop the blocking service
-        Intent intent = new Intent(getReactApplicationContext(), SocialMediaBlockService.class);
+        Intent intent = new Intent(getReactApplicationContext(), BackgroundManager.class);
         getReactApplicationContext().stopService(intent);
     }
 }

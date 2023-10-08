@@ -18,7 +18,8 @@ public class MyAccessibilityService extends AccessibilityService {
         try {
             ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packgeName, 0);
             CharSequence applicationLabel = packageManager.getApplicationLabel(applicationInfo);
-                Toast.makeText(this, "on data done "+applicationLabel, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "on data done "+packgeName, Toast.LENGTH_SHORT).show();
+
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }

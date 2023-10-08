@@ -1,6 +1,6 @@
 
-import { LOGIN, SIGNUP, SCANNER } from "../../config/urls";
-import { apiPost, clearUserData, setUserData } from "../../utils/utils";
+import { LOGIN, SIGNUP, SCANNER, ATTENDANCE, APPLIST } from "../../config/urls";
+import { apiGet, apiPost, clearUserData, setUserData } from "../../utils/utils";
 import store from "../store";
 import types from "../types";
 
@@ -40,6 +40,33 @@ export function scanner(data){
             }
             resolve(res)
         }).catch((error) => {
+            resolve(error)
+        })
+    })
+}
+
+export function attendance(data){
+    return new Promise((resolve, reject) => {
+        return apiPost(ATTENDANCE, data).then((res) => {
+            if (res) {
+                    resolve(res)
+                return
+            }
+            resolve(res)
+        }).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
+export function applist(){
+    return new Promise((resolve, reject)=>{
+        return apiGet(APPLIST).then((res)=>{
+            if(res){
+                resolve(res)
+                return
+            }
+        }).catch((error)=>{
             reject(error)
         })
     })

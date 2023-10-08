@@ -20,6 +20,7 @@
     "is_js": "^0.9.0",
     "react": "18.2.0",
     "react-native": "0.72.4",
+    "react-native-app-locker": "^1.0.3",
     "react-native-app-usage": "^0.1.6",
     "react-native-camera": "^4.2.1",
     "react-native-flash-message": "^0.4.2",

@@ -1,11 +1,14 @@
-import { View, Text, TouchableOpacity, Image, BackHandler, ImageBackground, StyleSheet, ScrollView, NativeModules } from 'react-native'
-import React, { useEffect } from 'react'
-import { useIsFocused } from '@react-navigation/native';
+import { View, Text, TouchableOpacity , Image, BackHandler, ImageBackground, StyleSheet, ScrollView, NativeModules } from 'react-native'
+import React, { useEffect,useState } from 'react'
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import LinearBackgroundButton from './components/LinearBackgroundButton ';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const {OverlayPermission } = NativeModules;
 
 const Home = ({ navigation }) => {
 
   const isFocused = useIsFocused();
+
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (isFocused) {
@@ -18,6 +21,8 @@ const Home = ({ navigation }) => {
       backHandler.remove();
     };
   }, [isFocused]);
+
+
 
 
 

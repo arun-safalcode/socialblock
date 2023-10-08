@@ -5,9 +5,13 @@ import LinearBackgroundButton from './components/LinearBackgroundButton ';
 import validation from '../utils/validation';
 import { showError, showSuccess } from '../utils/helperFunction';
 import actions from '../redux/actions';
+import { useSelector } from 'react-redux';
 
 const Login = ({ navigation }) => {
-
+  const userData = useSelector((state)=> state.auth.userData);
+   {!!userData && userData?.access_token ? navigation.navigate("Parent")
+          : navigation.navigate("Login")
+        }
   // BackHandler function in home page 
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -22,6 +26,8 @@ const Login = ({ navigation }) => {
       backHandler.remove();
     };
   }, [isFocused]);
+
+
 
   const [state, setState]= useState({
     isLoading:false,

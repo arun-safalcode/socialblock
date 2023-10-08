@@ -1,21 +1,55 @@
-import { View, Text, BackHandler, Button, Image, ImageBackground, StyleSheet, TextInput, NativeModules } from 'react-native'
-import React, { useEffect } from 'react'
+import { View, Text, BackHandler, Button,Modal , Image, ImageBackground, StyleSheet, TextInput, NativeModules } from 'react-native'
+import React, { useState,useEffect } from 'react'
 import { useIsFocused } from '@react-navigation/native';
-import LinearBackgroundButton from './components/LinearBackgroundButton ';
-const OverlayPermission = NativeModules.OverlayPermission;
-const SocialMediaBlockerModule = NativeModules.SocialMediaBlockerModule;
-
-// Lock WhatsApp
-const packageNameWhatsApp = 'com.whatsapp'; // Replace with the correct package name
-
+const {OverlayPermission } = NativeModules;
 
 import { useSelector } from 'react-redux';
+import { ScrollView } from 'react-native-gesture-handler';
+import LinearBackgroundButton from './components/LinearBackgroundButton ';
 const Permissions = ({ navigation }) => {
     const userData = useSelector((state)=> state.auth.userData);
-        // {!!userData && userData?.access_token ? navigation.navigate("Parent")
-        //   : navigation.navigate("Login")
-        // }
+    const [isGranted, setIsGranted] = useState(false);
+    const [isGranted2, setIsGranted2] = useState(false);
+
+        const CheckUsageaccess = ()=>{
+          OverlayPermission.requestUsageAccessPermission(permissionGranted => {
+            if (permissionGranted) {
+              // Permission is granted
+              console.log('Permission granted');
+              setIsGranted(true)
+            } else {
+              // Permission is not granted
+              console.log('Permission not granted');
+              setIsGranted(false)
+            }
+          });
+        }
+        const CheckOverlayPermission = ()=>{
+          OverlayPermission.requestOverlayPermission(permissionGranted => {
+            if (permissionGranted) {
+              // Permission is granted
+              console.log('Permission granted');
+              setIsGranted2(true)
+            } else {
+              // Permission is not granted
+              console.log('Permission not granted');
+              setIsGranted2(false)
+            }
+          });
+        }
+        useEffect(()=>{
+          CheckUsageaccess();
+          CheckOverlayPermission();
+          if(isGranted && isGranted2){
+            navigation.navigate("Login");
+          }
+        },[isGranted,isGranted2])
+
+
   return (
+    <ScrollView>
+
+    
     <View style={styles.container}>
       <ImageBackground
         source={require('../assets/image/banner.png')}
@@ -29,60 +63,48 @@ const Permissions = ({ navigation }) => {
         In order for SocialAppBlock to work peroperly, it is necessary to grant it these permissions.
         Don't worry, we don't store or share information or data about you or your device anywhere.
         </Text>
-        <View style={{ marginTop: 20 }}>
-          <LinearBackgroundButton
-            text="Notification access"
-            onPress={()=>{OverlayPermission.checkAndRequestPermission()}}
-          />
-          </View>
-        <View style={{ marginTop: 20 }}>
-          <LinearBackgroundButton
-            text="Display over other apps"
-            onPress={()=>{OverlayPermission.requestOverlayPermission()}}
-
-          />
+     
+          <View style={{ marginTop: 20 }}>
+            <Text>Display over other apps</Text>
+            <Text>Since Android 10, this permission is requried to block apps and websites</Text>
           </View>
           <View style={{ marginTop: 20 }}>
-           <LinearBackgroundButton
-            text="Usage access"
-            onPress={()=>{OverlayPermission.requestUsageAccessPermission()}}
+            <Text>
+              Usage Access 
+            </Text>
+            <Text>
+              This permission required to block apps and websites
+            </Text>
+          <LinearBackgroundButton
+            text={isGranted && isGranted2?"All Permission is Granted":'Check Permission Status'}
+            onPress={()=>{CheckOverlayPermission();CheckUsageaccess();}}
           />
           </View>
-        <View style={{ marginTop: 20 }}>
+        {/* <View style={{ marginTop: 20 }}>
           <LinearBackgroundButton
             text="Accessibility"
             onPress={()=>{OverlayPermission.requestAccessibilityPermission()}}
             style={styles.bntStyle}
           />
-        </View>
-
-        <View style={{ marginTop: 20 }}>
+        </View> */}
+        
+        {/* <View style={{ marginTop: 20 }}>
           <LinearBackgroundButton
             text="Block"
-            onPress={()=>{SocialMediaBlockerModule.startBlockingService()}}
+            onPress={()=>{OverlayPermission.startBlockingService()}}
             style={styles.bntStyle}
           />
         </View>
         <View style={{ marginTop: 20 }}>
           <LinearBackgroundButton
             text="Stop"
-            onPress={()=>{NativeModules.AppLock.lockApp(packageNameWhatsApp)}}
+            onPress={()=>{OverlayPermission.stopBlockingService()}}
             style={styles.bntStyle}
           />
-        </View>
-
-
-
-
-        
-          {/* <View style={{ marginTop: 20 }}>
-          <LinearBackgroundButton
-            text="Display pop-up window"
-            onPress={()=>{OverlayPermission.requestNotificationPermission()}}
-          />
-          </View> */}
+        </View> */}
       </View>
     </View>
+    </ScrollView>
   )
 }
 const styles = StyleSheet.create({

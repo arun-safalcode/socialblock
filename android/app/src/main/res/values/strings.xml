@@ -2,4 +2,6 @@
     <string name="app_name">Social Blocker</string>
     <string name="accessibility_service_label">Social Block App</string>
     <string name="accessibility_service_description">This allows the application to see which websites you access in a browser and block them based on your settings.\nNo other information about your browsing is recorded or logged in any way.</string>
+    <string name="device_admin_description">Social block permision</string>
+    <string name="device_admin_label">Social block Admin Label</string>
 </resources>

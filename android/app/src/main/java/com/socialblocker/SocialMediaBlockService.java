@@ -1,13 +1,26 @@
 package com.socialblocker;
+
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.IBinder;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.widget.Toast;
+import android.content.Context;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
-import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
+import com.facebook.react.ReactInstanceManager;
+import com.socialblocker.broadcast.ReceiverApplock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,88 +29,101 @@ import java.util.TreeMap;
 
 public class SocialMediaBlockService extends Service {
 
-    private static final long BLOCK_DURATION_MILLIS = 6 * 60 * 60 * 1000; // 6 hours
-    private static final long CHECK_INTERVAL_MILLIS = 5000; // Check every 5 seconds
+    private static final int NOTIFICATION_ID = 1;
+    private static final String CHANNEL_ID = "SocialBlockerChannel";
+
+    private static final long BLOCK_DURATION_MILLIS = 60000; // 60 seconds
 
     private Handler handler;
     private long startTime;
     private List<String> blockedApps; // List of package names of social media apps to block
-
+    private List<String> packageNames;
+    private ReactInstanceManager reactInstanceManager;
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public void onCreate() {
+        super.onCreate();
+        createNotificationChannel();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         startTime = System.currentTimeMillis();
+        // Start a background thread to continuously run runApplock
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    runApplock();
+                    // Sleep for a short duration to avoid high CPU usage (optional)
+                    try {
+                        Thread.sleep(100); // Adjust this sleep duration as needed
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+//         Schedule a task to unblock apps after the specified duration
+//        handler = new Handler(Looper.getMainLooper());
+//        handler.postDelayed(() -> unblockApps(), BLOCK_DURATION_MILLIS);
 
-        // Initialize the list of blocked apps
-        blockedApps = new ArrayList<>();
-        blockedApps.add("com.facebook.katana");
-        blockedApps.add("com.whatsapp");
-        blockedApps.add("com.instagram");
-
-        // Start blocking logic
-        blockSocialMediaApps();
-
-        // Schedule a task to unblock apps after the specified duration
-        handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(() -> unblockSocialMediaApps(), BLOCK_DURATION_MILLIS);
-
+        startForeground(NOTIFICATION_ID, createNotification());
         return START_STICKY;
-    }
-
-    private void blockSocialMediaApps() {
-        UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
-
-        long endTime = System.currentTimeMillis();
-        long startTime = endTime - BLOCK_DURATION_MILLIS;
-
-        // Get the list of usage stats
-        List<UsageStats> stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime);
-
-        // Create a sorted map to find the top foreground app
-        SortedMap<Long, UsageStats> sortedMap = new TreeMap<>();
-        for (UsageStats usageStats : stats) {
-            sortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-        }
-
-        // Check if a social media app is in the foreground
-        if (!sortedMap.isEmpty()) {
-            String topPackageName = sortedMap.get(sortedMap.lastKey()).getPackageName();
-
-//            if (isSocialMediaApp(topPackageName)) {
-                // Prevent the social media app from launching
-                PackageManager packageManager = getPackageManager();
-                packageManager.setApplicationEnabledSetting(topPackageName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-//            }
-        }
-    }
-
-    private void unblockSocialMediaApps() {
-        // Enable the social media apps again
-        PackageManager packageManager = getPackageManager();
-        for (String packageName : blockedApps) {
-            packageManager.setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
-        }
-
-        // Stop the service
-        stopSelf();
-    }
-
-    private boolean isSocialMediaApp(String packageName) {
-        // Check if the given package name belongs to a social media app
-        return blockedApps.contains(packageName);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // Remove the unblock task if the service is stopped before the duration expires
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-            Toast.makeText(this, "Data removed", Toast.LENGTH_SHORT).show();
+        unblockApps();
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    private void createNotificationChannel() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                    "Social Blocker",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
         }
     }
+
+    private Notification createNotification() {
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Social Blocker Service For 2 Min")
+                .setContentText("Blocking")
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentIntent(pendingIntent)
+                .build();
+    }
+
+    private void runApplock() {
+        long endTime = System.currentTimeMillis() + 210;
+        while (System.currentTimeMillis() < endTime) {
+            synchronized (this) {
+                try {
+                    Intent intent = new Intent(this, ReceiverApplock.class);
+                    sendBroadcast(intent);
+                    wait(endTime - System.currentTimeMillis());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void unblockApps() {
+        // Stop the service
+        stopForeground(true);
+        stopSelf();
+    }
+
+
 }

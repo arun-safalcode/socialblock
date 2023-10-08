@@ -5963,6 +5963,11 @@ react-is@^17.0.1:
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-app-locker@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/react-native-app-locker/-/react-native-app-locker-1.0.3.tgz"
+  integrity sha512-tuZLn1I3qIZ1dSLLAQ78nKsnGmru9FUx3jPO9QtBIrSI6u/9pV5ep9sB2/gKl2K7B42Kfd9udANbO7EssXvK2g==
+
 react-native-app-usage@^0.1.6:
   version "0.1.6"
   resolved "https://registry.npmjs.org/react-native-app-usage/-/react-native-app-usage-0.1.6.tgz"
