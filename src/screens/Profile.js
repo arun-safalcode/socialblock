@@ -30,7 +30,7 @@ const Profile = ({navigation}) => {
         source={require('../assets/image/profile.png')}
         style={{marginTop:10, alignSelf:'center',width:100,height:100}}
         />
-        <Text style={{ fontSize: 22, fontWeight: '700' }} >{userData?userData.user.name:''}</Text>
+        <Text style={{ fontSize: 22, fontWeight: '700', color:"black" }} >{userData?userData.user.name:''}</Text>
         <View style={{width:'100%'}}>
           <View style={styles.table}>
             <View style={styles.row}>
@@ -105,11 +105,13 @@ const styles = StyleSheet.create({
     padding: 5,
     fontSize:18,
     fontWeight:'600'
+    , color:"black"
   },
   cellData: {
     flex: 1,
     padding: 5,
-    fontSize:18,
+    fontSize:18
+    , color:"black"
   },
 });
 export default Profile

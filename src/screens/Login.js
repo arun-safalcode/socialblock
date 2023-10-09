@@ -79,11 +79,12 @@ const Login = ({ navigation }) => {
         <Image source={require('../assets/image/main-logo.png')} style={{ marginTop: 50 }} />
       </ImageBackground>
       <View style={styles.loginForm}>
-        <Text style={{ fontSize: 28, fontWeight: '700' }} >Login</Text>
+        <Text style={{ fontSize: 28, fontWeight: '700', color:"black" }} >Login</Text>
         <View style={styles.inputViewStyle}>
           <TextInput
             placeholder='Email id'
             style={styles.inputStyle}
+            placeholderTextColor="black"
             onChangeText={(email)=>updateState({email})}
           />
           <Image
@@ -100,6 +101,7 @@ const Login = ({ navigation }) => {
             placeholder='Password'
             secureTextEntry={isSecure}
             style={styles.inputStyle}
+            placeholderTextColor="black"
             onChangeText={(password)=>updateState({password})}
 
           />
@@ -115,7 +117,8 @@ const Login = ({ navigation }) => {
         <Text style={{
           alignSelf: 'flex-start',
           fontSize: 18,
-          fontWeight: '700'
+          fontWeight: '700',
+          color:"black"
         }}
           onPress={() => {
             navigation.navigate('Forgot Password')
@@ -162,7 +165,8 @@ const styles = StyleSheet.create({
   inputStyle: {
     backgroundColor: '#fff',
     flex: 1,
-    fontSize: 20
+    fontSize: 20,
+    color:'black'
   }
 });
 

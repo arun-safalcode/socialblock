@@ -58,20 +58,20 @@ const Permissions = ({ navigation }) => {
         <Image source={require('../assets/image/main-logo.png')} style={{ marginTop: 50 }} />
       </ImageBackground>
       <View style={styles.mainContent}>
-        <Text style={{ fontSize: 12, fontWeight: '700' }} >
+        <Text style={{ fontSize: 12, fontWeight: '700', color:"black" }} >
         In order for Social App Blocker to work peroperly, it is necessary to grant it these permissions.
         Don't worry, we don't store or share information or data about you or your device anywhere.
         </Text>
      
           <View style={{ marginTop: 20 }}>
-            <Text>Display over other apps</Text>
-            <Text>Since Android 10, this permission is requried apps and websites</Text>
+            <Text style={{color:"black"}} >Display over other apps</Text>
+            <Text style={{color:"black"}} >Since Android 10, this permission is requried apps and websites</Text>
           </View>
           <View style={{ marginTop: 20 }}>
-            <Text>
+            <Text style={{color:"black"}} >
               Usage Access 
             </Text>
-            <Text>
+            <Text style={{color:"black"}} >
               This permission required.
             </Text>
           <LinearBackgroundButton

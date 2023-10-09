@@ -16,8 +16,8 @@ const Splash = ({navigation}) => {
   return (
     <View style={{flex:1,justifyContent:'center',alignItems:'center', backgroundColor:'#fff'}} >
       <Image  source={logo} />
-      <Text style={{fontSize:28, fontWeight:'700',marginTop:20,marginBottom:20}} >Social App Blocker</Text>
-      <Text>Powered By Maheshwari Medical</Text>
+      <Text style={{fontSize:28, fontWeight:'700',marginTop:20,marginBottom:20, color:"black"}}  >Social App Blocker</Text>
+      <Text style={{color:"black"}} >Powered By Maheshwari Medical</Text>
     </View>
   )
 }

@@ -61,7 +61,7 @@ const Home = ({ navigation }) => {
         alignItems: 'center'
       }} >
         <Text
-          style={{ fontSize: 18, fontWeight: '600', marginLeft: 15 }}
+          style={{ fontSize: 18, fontWeight: '600', marginLeft: 15, color:"black" }}
         >Your dashboard</Text>
       </View>
       <ScrollView>
@@ -73,7 +73,7 @@ const Home = ({ navigation }) => {
         </ImageBackground>
         <View style={styles.mainContent}>
 
-          <Text style={{ fontSize: 28, fontWeight: '700' }} >Activity</Text>
+          <Text style={{ fontSize: 28, fontWeight: '700', color:"black" }} >Activity</Text>
           <Image
             source={require('../assets/image/qr.png')}
             style={{ marginTop: 10, alignSelf: 'center', width: 100, height: 100 }}
@@ -90,7 +90,7 @@ const Home = ({ navigation }) => {
           </View>
 
           <View style={{ width: '100%', marginTop: 20 }}>
-            <Text style={{ fontSize: 22, fontWeight: '600' }}>Last Scan</Text>
+            <Text style={{ fontSize: 22, fontWeight: '600', color:"black" }}>Last Scan</Text>
             <View
               style={{ height: 2, width: '100%', backgroundColor: '#1263FE' }}
             ></View>
@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
     borderColor: '#B3B3B3',
     borderWidth: 1,
     fontSize:18,
+    color:"black"
   },
 
 });
