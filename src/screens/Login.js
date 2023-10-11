@@ -64,7 +64,6 @@ const Login = ({ navigation }) => {
         navigation.navigate("Parent")
         updateState({isLoading:false})
       }catch(error){
-        console.log("============",error)
         showError(error.message)
         updateState({isLoading:false})
       }
