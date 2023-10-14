@@ -40,16 +40,16 @@ const Home = ({ navigation }) => {
   );
   // Get the latest entry (the first entry in the sorted array)
   const lastEntry = sortedData[0];
-  // const startService = async ()=>{
-  //       const applistResponse = await actions.applist();
-  //       const appData = applistResponse.data;
-  //       const packageNames  = appData.map(item => item.app_id_for_android);
-  //       OverlayPermission.startBlockingService(packageNames);
-  // }
-  // const stopService = () =>{
-  //   OverlayPermission.stopBlockingService();
-  // } 
-  // lastEntry?lastEntry.in_out_status==1?startService():stopService():stopService()
+  const startService = async ()=>{
+        const applistResponse = await actions.applist();
+        const appData = applistResponse.data;
+        const packageNames  = appData.map(item => item.app_id_for_android);
+        OverlayPermission.startBlockingService(packageNames);
+  }
+  const stopService = () =>{
+    OverlayPermission.stopBlockingService();
+  } 
+  lastEntry?lastEntry.in_out_status==1?startService():stopService():stopService()
   return (
     <View style={{ flex: 1 }} >
       <View style={{

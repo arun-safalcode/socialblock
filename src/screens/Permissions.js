@@ -10,16 +10,18 @@ const Permissions = ({ navigation }) => {
     const userData = useSelector((state)=> state.auth.userData);
     const [isGranted, setIsGranted] = useState(false);
     const [isGranted2, setIsGranted2] = useState(false);
+    const [isGranted3, setIsGranted3] = useState(false);
+    
 
         const CheckUsageaccess = ()=>{
           OverlayPermission.requestUsageAccessPermission(permissionGranted => {
             if (permissionGranted) {
               // Permission is granted
-              console.log('Permission granted');
+              console.log('UsageAccess Permission granted');
               setIsGranted(true)
             } else {
               // Permission is not granted
-              console.log('Permission not granted');
+              console.log('UsageAccess Permission not granted');
               setIsGranted(false)
             }
           });
@@ -28,22 +30,34 @@ const Permissions = ({ navigation }) => {
           OverlayPermission.requestOverlayPermission(permissionGranted => {
             if (permissionGranted) {
               // Permission is granted
-              console.log('Permission granted');
+              console.log('Overlay Permission granted');
               setIsGranted2(true)
             } else {
               // Permission is not granted
-              console.log('Permission not granted');
+              console.log('Overlay Permission not granted');
               setIsGranted2(false)
             }
           });
         }
+
+        const CheckAccessiblity = () =>{
+          OverlayPermission.isMyAccessibilityServiceEnabled((isEnabled) => {
+            if (isEnabled) {
+              setIsGranted3(true)
+            } else {
+              setIsGranted3(false)
+            }
+          });
+        }
+
         useEffect(()=>{
           CheckUsageaccess();
           CheckOverlayPermission();
-          if(isGranted && isGranted2){
+          CheckAccessiblity()
+          if(isGranted && isGranted2 && isGranted3){
             navigation.navigate("Login");
           }
-        },[isGranted,isGranted2])
+        },[isGranted,isGranted2,isGranted3])
 
 
   return (
@@ -75,17 +89,18 @@ const Permissions = ({ navigation }) => {
               This permission required.
             </Text>
           <LinearBackgroundButton
-            text={isGranted && isGranted2?"Granted":'Check Permission'}
-            onPress={()=>{CheckOverlayPermission();CheckUsageaccess();}}
+            text={isGranted && isGranted2 &&isGranted3?"Granted":'Check Permission'}
+            onPress={()=>{CheckOverlayPermission();CheckUsageaccess();CheckAccessiblity();}}
           />
           </View>
-        {/* <View style={{ marginTop: 20 }}>
+
+        <View style={{ marginTop: 20 }}>
           <LinearBackgroundButton
-            text="Accessibility"
+            text={isGranted3?"Accessibility Granted":'Accessibility Not Granted'}
             onPress={()=>{OverlayPermission.requestAccessibilityPermission()}}
             style={styles.bntStyle}
           />
-        </View> */}
+        </View>
         
         {/* <View style={{ marginTop: 20 }}>
           <LinearBackgroundButton

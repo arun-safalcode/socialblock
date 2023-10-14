@@ -1,44 +1,29 @@
 package com.socialblocker;
 
-import static androidx.core.app.ActivityCompat.startActivityForResult;
-
-import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
-import android.app.admin.DevicePolicyManager;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.provider.Settings;
-import android.widget.Toast;
 import android.os.Process;
+import android.provider.Settings;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.socialblocker.shared.SharedPrefUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class OverlayPermissionModule extends ReactContextBaseJavaModule {
@@ -63,24 +48,6 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
     public OverlayPermissionModule(ReactApplicationContext context) {
         super(context);
         reactContext = context;
-//        this.packageManager = reactContext.getPackageManager();
-//        this.handlerThread = new HandlerThread("PackageDisablerThread");
-//        this.handlerThread.start();
-//        this.handler = new Handler(handlerThread.getLooper());
-//        // Register a BroadcastReceiver to listen for the app killed event
-//        appKilledReceiver = new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context context, Intent intent) {
-//                // Send a notification to React Native that the app was killed
-//                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-//                        .emit(KILL_EVENT, null);
-//            }
-//        };
-//        // Register the BroadcastReceiver to listen for ACTION_PACKAGE_REMOVED
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-//        intentFilter.addDataScheme("package");
-//        reactContext.registerReceiver(appKilledReceiver, intentFilter);
     }
 
     @Override
@@ -134,7 +101,6 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
             currentActivity.startActivity(intent);
         }
     }
-
     @ReactMethod
     public void startBlockingService(ReadableArray packageNames) {
         lockedApps.clear();
@@ -144,10 +110,12 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
         SharedPrefUtil prefUtil = new SharedPrefUtil(reactContext);
         prefUtil.createLockedAppsList(lockedApps);
 
-        Intent intent = new Intent(getReactApplicationContext(), SocialMediaBlockService.class);
-        getReactApplicationContext().startService(intent);
+        if (!isServiceRunning(SocialMediaBlockService.class)) {
+            // Service is not running, start it
+            Intent intent = new Intent(getReactApplicationContext(), SocialMediaBlockService.class);
+            getReactApplicationContext().startService(intent);
+        }
     }
-
 
     @ReactMethod
     public void stopBlockingService() {
@@ -159,5 +127,49 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
         getReactApplicationContext().stopService(intent);
     }
 
+    private boolean isServiceRunning(Class<? extends Service> serviceClass) {
+        ActivityManager manager = (ActivityManager) reactContext.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    @ReactMethod
+    public void isMyAccessibilityServiceEnabled(Callback callback) {
+        String packageName = getReactApplicationContext().getPackageName();
+        String service = packageName + "/"+packageName+".MyAccessibilityService";
+        boolean enabled = false;
+
+        try {
+            int accessibilityEnabled = Settings.Secure.getInt(
+                    getReactApplicationContext().getContentResolver(),
+                    Settings.Secure.ACCESSIBILITY_ENABLED
+            );
+
+            if (accessibilityEnabled == 1) {
+                String services = Settings.Secure.getString(
+                        getReactApplicationContext().getContentResolver(),
+                        Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+                );
+                if (services != null) {
+                    String[] enabledServices = services.split(":");
+                    for (String enabledService : enabledServices) {
+                        if (enabledService.equals(service)) {
+                            enabled = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Settings.SettingNotFoundException e) {
+            // Handle exception as needed
+        }
+
+        callback.invoke(enabled);
+    }
 
 }

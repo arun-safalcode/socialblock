@@ -42,18 +42,12 @@ public class ReceiverApplock extends BroadcastReceiver {
         List<String> lockedApps = prefUtil.getLockedAppsList();
         String appRunning = utils.getLauncherTopApp();
 
-        //always BLOCK
-            if (lockedApps.contains(appRunning)) {
-                prefUtil.clearLastApp();
-                prefUtil.setLastApp(appRunning);
-                killThisPackageIfRunning(context, appRunning);
-//                Intent i = new Intent(context, ScreenBlocker.class);
-//                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                i.putExtra("broadcast_receiver", "broadcast_receiver");
-//                // Add the following line to specify that you want to start your React Native app
-//                i.putExtra("startReactNative", true);
-//                context.startActivity(i);
-            }
+        // Check if the running app is in the lockedApps list and block it
+        if (lockedApps.contains(appRunning)) {
+            prefUtil.clearLastApp();
+            prefUtil.setLastApp(appRunning);
+            killThisPackageIfRunning(context, appRunning);
+        }
     }
 
     public boolean checkTime(String startTimeHour, String startTimeMin, String endTimeHour, String endTimeMin) {
@@ -90,4 +84,5 @@ public class ReceiverApplock extends BroadcastReceiver {
             return false;
         }
     }
+
 }
