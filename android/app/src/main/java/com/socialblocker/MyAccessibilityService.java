@@ -5,8 +5,6 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
@@ -20,41 +18,16 @@ public class MyAccessibilityService extends AccessibilityService {
     private List<String> blockedWebsites = Arrays.asList("facebook.com", "instagram.com", "safalcode.com");
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        String packgeName = event.getPackageName().toString();
-        PackageManager packageManager = this.getPackageManager();
-        try {
-            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packgeName, 0);
+        String packageName = event.getPackageName() != null ? event.getPackageName().toString() : null;
+
             SharedPrefUtil prefUtil = new SharedPrefUtil(this);
             List<String> lockedApps = prefUtil.getLockedAppsList();
             // Check if the running app is in the lockedApps list and block it
-            if (lockedApps.contains(packgeName)) {
+            if (lockedApps.contains(packageName)) {
                 prefUtil.clearLastApp();
-                prefUtil.setLastApp(packgeName);
-                killThisPackageIfRunning(this, packgeName);
+                prefUtil.setLastApp(packageName);
+                killThisPackageIfRunning(this, packageName);
             }
-        } catch (PackageManager.NameNotFoundException e) {
-//            throw new RuntimeException(e);
-            Toast.makeText(this, ""+e, Toast.LENGTH_SHORT).show();
-        }
-
-
-//        if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED) {
-//            AccessibilityNodeInfo source = event.getSource();
-//            if (source != null) {
-//                CharSequence text = source.getText();
-//                if (text != null) {
-//                    String[] blockedWebsites = {"safalcode.com", "instagram.com"};
-//                    for (String website : blockedWebsites) {
-//                        if (text.toString().contains(website)) {
-//                            showToast("Access to a blocked website: " + website);
-//                            killThisPackageIfRunning(this, packgeName);
-//                            return; // Stop further processing for this event.
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
 
     }
 
