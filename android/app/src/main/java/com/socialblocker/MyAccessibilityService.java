@@ -12,12 +12,15 @@ import android.widget.Toast;
 
 import com.socialblocker.shared.SharedPrefUtil;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MyAccessibilityService extends AccessibilityService {
     private static final String TAG = "MyAccessibilityService";
+    private List<String> blockedWebsites = Arrays.asList("facebook.com", "instagram.com", "safalcode.com");
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        int eventType = event.getEventType();
         String packgeName = event.getPackageName().toString();
         PackageManager packageManager = this.getPackageManager();
         try {
@@ -31,10 +34,30 @@ public class MyAccessibilityService extends AccessibilityService {
                 prefUtil.setLastApp(packgeName);
                 killThisPackageIfRunning(this, packgeName);
             }
-
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+//        if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED) {
+//            AccessibilityNodeInfo source = event.getSource();
+//            if (source != null) {
+//                CharSequence text = source.getText();
+//                if (text != null) {
+//                    String[] blockedWebsites = {"safalcode.com", "instagram.com"};
+//                    for (String website : blockedWebsites) {
+//                        if (text.toString().contains(website)) {
+//                            showToast("Access to a blocked website: " + website);
+//                            killThisPackageIfRunning(this, packgeName);
+//                            return; // Stop further processing for this event.
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
+        // Create an instance of AccessibilityUtils.Builder
+        // Create an instance of AccessibilityUtils.Builder
+
 
     }
 
@@ -49,16 +72,16 @@ public class MyAccessibilityService extends AccessibilityService {
         super.onServiceConnected();
         AccessibilityServiceInfo info = new AccessibilityServiceInfo();
         info.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED |
+                AccessibilityEvent.TYPES_ALL_MASK|
                 AccessibilityEvent.TYPE_VIEW_FOCUSED |
+                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED|
                 AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED;  // Add TYPE_VIEW_TEXT_CHANGED to capture text changes.
         info.feedbackType = AccessibilityServiceInfo.FEEDBACK_SPOKEN;
-        info.notificationTimeout = 1000;
+        info.flags = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS |
+                AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+//        info.notificationTimeout = 100000;
         this.setServiceInfo(info);
 
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     public static void killThisPackageIfRunning(final Context context, String packageName) {
@@ -69,4 +92,14 @@ public class MyAccessibilityService extends AccessibilityService {
         context.startActivity(startMain);
         activityManager.killBackgroundProcesses(packageName);
     }
+
+
+    private boolean isBrowserApp(String packageName) {
+        // Add package names for browsers you want to support.
+        return packageName.equals("com.android.chrome") || packageName.equals("com.android.browser");
+    }
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
 }

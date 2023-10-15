@@ -23,6 +23,7 @@
     "react-native-app-locker": "^1.0.3",
     "react-native-app-usage": "^0.1.6",
     "react-native-camera": "^4.2.1",
+    "react-native-device-info": "^10.11.0",
     "react-native-flash-message": "^0.4.2",
     "react-native-gesture-handler": "^2.12.1",
     "react-native-linear-gradient": "^2.8.3",

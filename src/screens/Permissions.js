@@ -1,5 +1,7 @@
 import { View, Text, BackHandler, Button,Modal , Image, ImageBackground, StyleSheet, TextInput, NativeModules } from 'react-native'
 import React, { useState,useEffect } from 'react'
+import DeviceInfo from 'react-native-device-info';
+
 import { useIsFocused } from '@react-navigation/native';
 const {OverlayPermission } = NativeModules;
 
@@ -11,6 +13,31 @@ const Permissions = ({ navigation }) => {
     const [isGranted, setIsGranted] = useState(false);
     const [isGranted2, setIsGranted2] = useState(false);
     const [isGranted3, setIsGranted3] = useState(false);
+
+    const [deviceStatus, setDeviceStatus] = useState(false);
+
+    const isXiaomiDevice = async () => {
+      try {
+        const brand = await DeviceInfo.getBrand();
+        return brand.toLowerCase() === 'xiaomi' || brand.toLowerCase() === 'redmi';
+      } catch (error) {
+        // Handle the Promise rejection here
+        console.error('Error while checking device brand:', error);
+        return false; // Assuming non-Xiaomi as a fallback
+      }
+    };
+    
+    // Example usage
+    const CheckMI = ()=>{
+      isXiaomiDevice().then((result) => {
+        if (result) {
+          setDeviceStatus(true)
+        } else {
+          setDeviceStatus(false)
+        }
+      });
+    }
+   
     
 
         const CheckUsageaccess = ()=>{
@@ -44,8 +71,10 @@ const Permissions = ({ navigation }) => {
           OverlayPermission.isMyAccessibilityServiceEnabled((isEnabled) => {
             if (isEnabled) {
               setIsGranted3(true)
+              // alert("Accessibility Permission Granted")
             } else {
               setIsGranted3(false)
+              alert("Accessibility Permission Not Granted. Please Click Allow Permission")
             }
           });
         }
@@ -59,6 +88,9 @@ const Permissions = ({ navigation }) => {
           }
         },[isGranted,isGranted2,isGranted3])
 
+        useEffect(()=>{
+          CheckMI();
+        },[])
 
   return (
     <ScrollView>
@@ -72,31 +104,47 @@ const Permissions = ({ navigation }) => {
         <Image source={require('../assets/image/main-logo.png')} style={{ marginTop: 50 }} />
       </ImageBackground>
       <View style={styles.mainContent}>
-        <Text style={{ fontSize: 12, fontWeight: '700', color:"black" }} >
-        In order for Social App Blocker to work peroperly, it is necessary to grant it these permissions.
+        <Text style={{ fontSize: 16, color:"black" }} >
+        In order for Social Blocker to work peroperly, it is necessary to grant it these permissions.
         Don't worry, we don't store or share information or data about you or your device anywhere.
         </Text>
      
           <View style={{ marginTop: 20 }}>
-            <Text style={{color:"black"}} >Display over other apps</Text>
+            <Text style={{fontSize: 16, fontWeight: '600',color:"black"}} >Display over other apps
+            {deviceStatus=== true?" and Display pop-up windows while running in the background also need to allow":""}</Text>
             <Text style={{color:"black"}} >Since Android 10, this permission is requried apps and websites</Text>
+            <Text style={{marginTop:10}}>
+              <Text style={{ color: "black", fontSize: 16, fontWeight: "bold" }}>Usage Access</Text>
+              <Text style={{ color: "black", fontSize: 16 }}>Permission Requried</Text>
+            </Text>
+
           </View>
           <View style={{ marginTop: 20 }}>
-            <Text style={{color:"black"}} >
-              Usage Access 
-            </Text>
-            <Text style={{color:"black"}} >
-              This permission required.
-            </Text>
           <LinearBackgroundButton
             text={isGranted && isGranted2 &&isGranted3?"Granted":'Check Permission'}
             onPress={()=>{CheckOverlayPermission();CheckUsageaccess();CheckAccessiblity();}}
           />
           </View>
-
+          <View > 
+            <Text style={{marginTop:10}}>
+              <Text style={{ color: "black", fontSize: 18 }}>1. Find Download Apps or Services and </Text>
+              <Text style={{ color: "black", fontSize: 18, fontWeight: "bold" }}>Social Blocker</Text>
+            </Text>
+            <Text style={{marginTop:10}}>
+              <Text style={{ color: "black", fontSize: 18 }}>2. Tap the switch to </Text>
+              <Text style={{ color: "black", fontSize: 18, fontWeight: "bold" }}>turn ON</Text>
+            </Text>
+            <Text style={{marginTop:10}}>
+              <Text style={{ color: "black", fontSize: 18 }}>3. Tap </Text>
+              <Text style={{ color: "black", fontSize: 18, fontWeight: "bold" }}>Allow</Text>
+              <Text style={{ color: "black", fontSize: 18 }}>to confirm </Text>
+            </Text>
+            
+          </View>
+       
         <View style={{ marginTop: 20 }}>
           <LinearBackgroundButton
-            text={isGranted3?"Accessibility Granted":'Accessibility Not Granted'}
+            text={isGranted3?"Accessibility Granted":'Allow Permission'}
             onPress={()=>{OverlayPermission.requestAccessibilityPermission()}}
             style={styles.bntStyle}
           />
@@ -155,6 +203,9 @@ const styles = StyleSheet.create({
   },
   bntStyle:{
     marginBottom:5
+  },
+  TextSize18:{
+    fontSize:18
   }
 });
 

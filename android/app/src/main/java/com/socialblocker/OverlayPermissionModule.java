@@ -25,6 +25,7 @@ import com.socialblocker.shared.SharedPrefUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class OverlayPermissionModule extends ReactContextBaseJavaModule {
     private static final int REQUEST_NOTIFICATION_ACCESS = 1;
@@ -59,22 +60,30 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void requestOverlayPermission(Callback callback) {
-        Activity currentActivity = getCurrentActivity();
-        if (currentActivity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(currentActivity)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + currentActivity.getPackageName()));
-                currentActivity.startActivityForResult(intent, OVERLAY_PERMISSION_CODE);
-                callback.invoke(false); // Permission not granted yet
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Activity currentActivity = getCurrentActivity();
+            if (currentActivity != null) {
+                if (!Settings.canDrawOverlays(currentActivity)) {
+                    if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
+                        Intent intent = new Intent("miui.intent.action.APP_PERM_EDITOR");
+                        intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                        intent.putExtra("extra_pkgname", currentActivity.getPackageName());
+                        currentActivity.startActivity(intent);
+                    } else {
+                        Intent overlaySettings = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + currentActivity.getPackageName()));
+                        currentActivity.startActivityForResult(overlaySettings, OVERLAY_PERMISSION_CODE);
+                    }
+                    callback.invoke(false); // Permission not granted yet
+                } else {
+                    callback.invoke(true); // Permission already granted
+                }
             } else {
-//                Toast.makeText(currentActivity, "Display Over Other Access Permission Granted", Toast.LENGTH_SHORT).show();
-                callback.invoke(true); // Permission already granted
+                callback.invoke(false); // Default case
             }
         } else {
-            callback.invoke(false); // Default case
+            callback.invoke(false); // Default case for Android versions below M
         }
     }
-
     @ReactMethod
     public void requestUsageAccessPermission(Callback callback) {
         Activity currentActivity = getCurrentActivity();
@@ -101,6 +110,9 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
             currentActivity.startActivity(intent);
         }
     }
+
+
+
     @ReactMethod
     public void startBlockingService(ReadableArray packageNames) {
         lockedApps.clear();
@@ -115,6 +127,7 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
             Intent intent = new Intent(getReactApplicationContext(), SocialMediaBlockService.class);
             getReactApplicationContext().startService(intent);
         }
+
     }
 
     @ReactMethod
@@ -171,5 +184,7 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
 
         callback.invoke(enabled);
     }
+
+
 
 }

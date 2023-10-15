@@ -46,7 +46,6 @@ public class SocialMediaBlockService extends Service {
             public void run() {
                 while (true) {
                     runApplock();
-                    // Sleep for a short duration to avoid high CPU usage (optional)
                     try {
                         Thread.sleep(100); // Adjust this sleep duration as needed
                     } catch (InterruptedException e) {
