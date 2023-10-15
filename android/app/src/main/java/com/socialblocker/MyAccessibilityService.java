@@ -20,12 +20,10 @@ public class MyAccessibilityService extends AccessibilityService {
     private List<String> blockedWebsites = Arrays.asList("facebook.com", "instagram.com", "safalcode.com");
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        int eventType = event.getEventType();
         String packgeName = event.getPackageName().toString();
         PackageManager packageManager = this.getPackageManager();
         try {
             ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packgeName, 0);
-            CharSequence applicationLabel = packageManager.getApplicationLabel(applicationInfo);
             SharedPrefUtil prefUtil = new SharedPrefUtil(this);
             List<String> lockedApps = prefUtil.getLockedAppsList();
             // Check if the running app is in the lockedApps list and block it
@@ -35,8 +33,10 @@ public class MyAccessibilityService extends AccessibilityService {
                 killThisPackageIfRunning(this, packgeName);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
+//            throw new RuntimeException(e);
+            Toast.makeText(this, ""+e, Toast.LENGTH_SHORT).show();
         }
+
 
 //        if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED) {
 //            AccessibilityNodeInfo source = event.getSource();
@@ -54,9 +54,6 @@ public class MyAccessibilityService extends AccessibilityService {
 //                }
 //            }
 //        }
-
-        // Create an instance of AccessibilityUtils.Builder
-        // Create an instance of AccessibilityUtils.Builder
 
 
     }
