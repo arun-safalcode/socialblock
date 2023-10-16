@@ -5,6 +5,8 @@ import LinearBackgroundButton from './components/LinearBackgroundButton ';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const {OverlayPermission } = NativeModules;
 import actions from '../redux/actions';
+import { REDIRECT_URL } from '../config/urls';
+
 
 const Home = ({ navigation }) => {
 
@@ -44,7 +46,8 @@ const Home = ({ navigation }) => {
         const applistResponse = await actions.applist();
         const appData = applistResponse.data;
         const packageNames  = appData.map(item => item.app_id_for_android);
-        OverlayPermission.startBlockingService(packageNames);
+        const blockedSites = appData.map(item => item.web_url)
+        OverlayPermission.startBlockingService(packageNames, blockedSites, REDIRECT_URL);
   }
   const stopService = () =>{
     OverlayPermission.stopBlockingService();

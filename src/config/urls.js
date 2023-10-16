@@ -9,3 +9,4 @@ export const SCANNER = getApiUrl('/qr-token');
 export const ATTENDANCE = getApiUrl('/emp-attand');
 export const APPLIST = getApiUrl('/app-data');
 export const ATTENDANCE_HISTORY = getApiUrl('/attand-history');
+export const REDIRECT_URL = getApiUrl('/blocked');

@@ -79,6 +79,24 @@ public class SharedPrefUtil {
         return temp;
     }
 
+    //add website to locked list
+    public void createLockedWebsitesList(List<String> appList) {
+        for (int i = 0; i < appList.size(); i++) {
+            putString("web_" + i, appList.get(i));
+        }
+        putInteger("listSize", appList.size());
+    }
+
+    //get apps from locked list
+    public List<String> getLockedWebsitesList() {
+        List<String> temp = new ArrayList<>();
+        int size = getInteger("listSize");
+        for (int i = 0; i < size; i++) {
+            temp.add(getString("web_" + i));
+        }
+        return temp;
+    }
+
     public void setLockedAppsListProfile(List<String> appList) {
         for (int i = 0; i < appList.size(); i++) {
             putString("profileApp_" + i, appList.get(i));

@@ -41,6 +41,7 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
     private static final int PERMISSION_REQUEST_CODE = 123;
 
     private List<String> lockedApps = new ArrayList<>();
+    private List<String> blockedWebsites = new ArrayList<>();
 
     private static final int COMPONENT_ENABLED_STATE_PERMISSION_CODE = 456; // Define this constant
 
@@ -114,15 +115,28 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void startBlockingService(ReadableArray packageNames) {
+    public void startBlockingService(ReadableArray packageNames, ReadableArray blockedSites, String redirectURL) {
+
         lockedApps.clear();
         for (int i = 0; i < packageNames.size(); i++) {
             lockedApps.add(packageNames.getString(i));
         }
+
         SharedPrefUtil prefUtil = new SharedPrefUtil(reactContext);
         prefUtil.createLockedAppsList(lockedApps);
 
+        blockedWebsites.clear();
+        for (int j = 0; j < blockedSites.size(); j++){
+            blockedWebsites.add(blockedSites.getString(j));
+        }
+        prefUtil.createLockedWebsitesList(blockedWebsites);
+
+        AccessibilityUtils.Builder myService = new AccessibilityUtils.Builder();
+        myService.setRedirectTo(redirectURL.isEmpty()?"http//www.404.net":redirectURL);
+        myService.build();
+
         if (!isServiceRunning(SocialMediaBlockService.class)) {
+
             // Service is not running, start it
             Intent intent = new Intent(getReactApplicationContext(), SocialMediaBlockService.class);
             getReactApplicationContext().startService(intent);
@@ -133,6 +147,7 @@ public class OverlayPermissionModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void stopBlockingService() {
         lockedApps.clear();
+        blockedWebsites.clear();
         SharedPrefUtil prefUtil = new SharedPrefUtil(reactContext);
         prefUtil.createLockedAppsList(lockedApps);
         // Stop the blocking service
