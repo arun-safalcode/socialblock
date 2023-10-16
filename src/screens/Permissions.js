@@ -80,9 +80,9 @@ const Permissions = ({ navigation }) => {
         }
 
         useEffect(()=>{
-          // CheckUsageaccess();
-          // CheckOverlayPermission();
-          // CheckAccessiblity()
+          CheckUsageaccess();
+          CheckOverlayPermission();
+          CheckAccessiblity()
           if(isGranted && isGranted2 && isGranted3){
             navigation.navigate("Login");
           }

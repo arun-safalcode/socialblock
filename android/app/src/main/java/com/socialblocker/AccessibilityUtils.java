@@ -57,17 +57,14 @@ public class AccessibilityUtils {
             AccessibilityNodeInfo parentNodeInfo = event.getSource();
             if (event.getPackageName() != null) {
                 packageName = event.getPackageName().toString();
-
+                PackageManager packageManager = myAccessibilityService.getPackageManager();
+                try {
+                    packageManager.getPackageInfo(packageName, 0);
+                    foregroundAppName = (String) packageManager.getApplicationLabel(packageManager.getApplicationInfo(packageName, 0));
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
-
-            PackageManager packageManager = myAccessibilityService.getPackageManager();
-            try {
-                packageManager.getPackageInfo(packageName, 0);
-                foregroundAppName = (String) packageManager.getApplicationLabel(packageManager.getApplicationInfo(packageName, 0));
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-
             getChild(parentNodeInfo);
 
             browserConfig = null;
@@ -94,9 +91,12 @@ public class AccessibilityUtils {
             SharedPrefUtil prefUtil = new SharedPrefUtil(myAccessibilityService);
             List<String> lockedWebsitesList = prefUtil.getLockedWebsitesList();
 
-            if(lockedWebsitesList.contains(capturedUrl)){
-                String replaced = redirectTo;
-                performRedirect(myAccessibilityService, replaced != null ? replaced : "", browserConfig.getPackageName());
+            for (String website : lockedWebsitesList) {
+                if (!website.isEmpty() && capturedUrl.toLowerCase().startsWith(website)) {
+                    String replaced = redirectTo;
+                    performRedirect(myAccessibilityService, replaced != null ? replaced : "", browserConfig.getPackageName());
+                    break; // Exit the loop if a match is found
+                }
             }
 
         } catch (Exception e) {
@@ -134,6 +134,8 @@ public class AccessibilityUtils {
         addressBarNodeInfo.recycle();
         return url;
     }
+
+
 
     private void performRedirect(MyAccessibilityService serviceMy, String redirectUrl, String browserPackage) {
         String url = redirectUrl;

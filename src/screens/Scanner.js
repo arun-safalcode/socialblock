@@ -1,5 +1,5 @@
 import {
-  View, Text, Image, ImageBackground, StyleSheet,NativeModules
+  View, Text, Image, ImageBackground, StyleSheet,NativeModules, ActivityIndicator
 } from 'react-native'
 import React, { useState } from 'react'
 import QRCodeScanner from 'react-native-qrcode-scanner';
@@ -20,10 +20,13 @@ const Scanner = ({ navigation }) => {
   const {isLoading, token, isSecure, in_outStatus} = state
   const updateState = (data)=> setState(()=>({...state, ...data}));
   const [lockedList, setLockList] = useState([]);
+  const [showActivityIndicator, setShowActivityIndicator] = useState(false);
+
 
   //Scan qr code and check user is authenticated or not
   const onSuccess = async (e)=>{
     try{
+      setShowActivityIndicator(true);
       const res = await actions.scanner({
         qr_code_token:e.data
       })
@@ -33,11 +36,13 @@ const Scanner = ({ navigation }) => {
      }else{
       showError("User location does not matched")
       alert("User location does not matched")
+      setShowActivityIndicator(false);
      }
       
     }catch(error){
       showError("Something went wrong  qr scan")
       alert("Someting went wrong qr scan")
+      setShowActivityIndicator(false);
     }
   }
   //If user is authenticated with the location then start attendacne and blocking apps
@@ -46,6 +51,7 @@ const Scanner = ({ navigation }) => {
       const res = await actions.attendance({
         qr_id:qr_id,
       })
+      console.log("last entry"+res.in_out_status)
         if(res.in_out_status === 1){
           showSuccess(res.message)
           const applistResponse = await actions.applist();
@@ -53,20 +59,34 @@ const Scanner = ({ navigation }) => {
           const packageNames  = appData.map(item => item.app_id_for_android);
           const blockedSites = appData.map(item => item.web_url)
           OverlayPermission.startBlockingService(packageNames, blockedSites, REDIRECT_URL);
-        }else{
+          setTimeout(() => {
+            setShowActivityIndicator(false);
+            navigation.navigate("Parent");
+          }, 3000);
+          }else{
           showError(res.message)
           OverlayPermission.stopBlockingService();
+          setTimeout(() => {
+            setShowActivityIndicator(false);
+            navigation.navigate("Parent");
+          }, 3000);
         }
-        navigation.navigate("Parent");
+        
     }catch(error){
       showError("Something went wrong")
       alert("Someting went wrong qr scan")
       navigation.navigate("Parent");
     }
+    setShowActivityIndicator(false);
   }
 
   return (
     <View style={styles.container}>
+       {showActivityIndicator && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}   
       <ImageBackground
         source={require('../assets/image/banner.png')}
         style={styles.backgroundImage}
@@ -78,7 +98,7 @@ const Scanner = ({ navigation }) => {
             onRead={(e)=>{onSuccess(e)}}
             flashMode={RNCamera.Constants.FlashMode.auto}
             showMarker={true}
-          />        
+          />     
     </View>
   )
 }
